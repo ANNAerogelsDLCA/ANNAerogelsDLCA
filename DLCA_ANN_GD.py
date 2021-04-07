@@ -34,29 +34,29 @@ from ANN import build_model
 ################################################################################################################################
 # Flag for saving and loading model
 SaveModel = False
-LoadModel = False
+LoadModel = True
 
 
 ################################################################################################################################
 # Train ANN
 ################################################################################################################################
+# Set custom inverse sigmoid activation function
+get_custom_objects().update({'inv_sigmoid': inv_sigmoid})
+
+# Set path and load data
+path = './Data/ML3DInput.csv'
+train_dataset, test_dataset, train_labels, test_labels, train_stats, dataset = GetData(path, 0.7)
+
+# Normalize data
+normed_train_data = normData(train_dataset,  train_stats['max'], train_stats['min'])
+normed_test_data = normData(test_dataset, train_stats['max'], train_stats['min'])
+
 # Load model
 if LoadModel == True:
-  
-  model = keras.models.load_model('./ANNModel/3D_DLCA_ANN_Model.pb')
+    
+    model = keras.models.load_model('./ANNModel/3D_DLCA_ANN_Model.pb')
 
 else:
-    # Set custom inverse sigmoid activation function
-    get_custom_objects().update({'inv_sigmoid': inv_sigmoid})
-
-    # Set path and load data
-    path = './Data/ML3DInput.csv'
-    train_dataset, test_dataset, train_labels, test_labels, train_stats, dataset = GetData(path, 0.7)
-
-    # Normalize data
-    normed_train_data = normData(train_dataset,  train_stats['max'], train_stats['min'])
-    normed_test_data = normData(test_dataset, train_stats['max'], train_stats['min'])
-
     # Build model
     shape = [len(train_dataset.keys())]
     model = build_model(shape)
@@ -86,7 +86,7 @@ else:
 
     # Save model
     if SaveModel == True:
-    model.save('./ANNModel/3D_DLCA_ANN_Model.pb')
+        model.save('./ANNModel/3D_DLCA_ANN_Model.pb')
 
 
 ################################################################################################################################
